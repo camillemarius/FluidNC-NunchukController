@@ -89,16 +89,16 @@ void NunchukController::fetchLatestReadings()
     // extract and store
     if (ret == ESP_OK) {
         btnAccelByte = nunchukBuffer[NUNCHUK_CONTROLLER_BTN_ACCEL_IDX];
-        joystickX = nunchukBuffer[NUNCHUK_CONTROLLER_JOYSTICK_X_IDX];
-        joystickY = nunchukBuffer[NUNCHUK_CONTROLLER_JOYSTICK_Y_IDX];
-        accelX = (uint16_t)((nunchukBuffer[NUNCHUK_CONTROLLER_ACCEL_X_IDX] << 2) | 
+        joystickdata.JX = nunchukBuffer[NUNCHUK_CONTROLLER_JOYSTICK_X_IDX];
+        joystickdata.JY = nunchukBuffer[NUNCHUK_CONTROLLER_JOYSTICK_Y_IDX];
+        joystickdata.AX = (uint16_t)((nunchukBuffer[NUNCHUK_CONTROLLER_ACCEL_X_IDX] << 2) | 
                         ((btnAccelByte & 0b11000000) >> 6));
-        accelY = (uint16_t)((nunchukBuffer[NUNCHUK_CONTROLLER_ACCEL_Y_IDX] << 2) | 
+        joystickdata.AY = (uint16_t)((nunchukBuffer[NUNCHUK_CONTROLLER_ACCEL_Y_IDX] << 2) | 
                         ((btnAccelByte & 0b00110000) >> 4));
-        accelZ = (uint16_t)((nunchukBuffer[NUNCHUK_CONTROLLER_ACCEL_Z_IDX] << 2) | 
+        joystickdata.AZ = (uint16_t)((nunchukBuffer[NUNCHUK_CONTROLLER_ACCEL_Z_IDX] << 2) | 
                         ((btnAccelByte & 0b00001100) >> 2));
-        cButton = (uint8_t)(!((btnAccelByte & 0b10) >> 1));
-        zButton = (uint8_t)(!(btnAccelByte & 0b1));
+        joystickdata.C = (uint8_t)(!((btnAccelByte & 0b10) >> 1));
+        joystickdata.Z = (uint8_t)(!(btnAccelByte & 0b1));
     }
     
     // request for next time
@@ -113,12 +113,13 @@ void NunchukController::fetchLatestReadings()
 
 
 //nunchuk_data_t* NunchukController::getLatestData()  { return &latestNunchukData; }
-uint8_t NunchukController::getJoystickX()           { return joystickX; }
-uint8_t NunchukController::getJoystickY()           { return joystickY; }
-uint16_t NunchukController::getAccelX()             { return accelX; }
-uint16_t NunchukController::getAccelY()             { return accelY; }
-uint16_t NunchukController::getAccelZ()             { return accelZ; }
-uint8_t NunchukController::getCButton()             { return cButton; }
-uint8_t NunchukController::getZButton()             { return zButton; }
+uint8_t         NunchukController::getJoystickX()       { return joystickdata.JX;}
+uint8_t         NunchukController::getJoystickY()       { return joystickdata.JY;}
+uint16_t        NunchukController::getAccelX()          { return joystickdata.AX;}
+uint16_t        NunchukController::getAccelY()          { return joystickdata.AY;}
+uint16_t        NunchukController::getAccelZ()          { return joystickdata.AZ;}
+uint8_t         NunchukController::getCButton()         { return joystickdata.C; }
+uint8_t         NunchukController::getZButton()         { return joystickdata.Z; }
+JoystickData    NunchukController::getMovementCommand()    {return joystickdata;    }
 
 

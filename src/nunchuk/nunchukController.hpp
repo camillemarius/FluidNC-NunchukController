@@ -7,10 +7,11 @@
  *      Author: Jacob
  */
 
-#ifndef COMPONENTS_NUNCHUK_INCLUDE_NUNCHUK_CONTROLLER_H_
-#define COMPONENTS_NUNCHUK_INCLUDE_NUNCHUK_CONTROLLER_H_
+#ifndef NUNCHUK_CONTROLLER_H_
+#define NUNCHUK_CONTROLLER_H_
 
 #include "hal/i2c_types.h"
+#include "queue/templates/Message.h"
 
 // I2C
 #define I2C_SDA_PIN                 8
@@ -70,6 +71,7 @@ public:
     uint16_t getAccelZ();
     uint8_t getCButton();
     uint8_t getZButton();
+    JoystickData getMovementCommand();
     void initi2c();
 protected:
     NunchukController(
@@ -80,6 +82,8 @@ protected:
 private:
     const i2c_port_t port;
     const uint8_t addr;
+
+    JoystickData joystickdata;
     uint8_t joystickX, joystickY;
     uint16_t accelX, accelY, accelZ;
     uint8_t cButton, zButton;
