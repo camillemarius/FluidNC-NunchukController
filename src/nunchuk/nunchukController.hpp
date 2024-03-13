@@ -53,6 +53,10 @@ typedef struct {
     uint8_t zButton;
 } nunchuk_data_t;
 */
+struct JoystickData {
+        uint8_t JX,JY,C,Z;
+        uint16_t AX,AY,AZ;
+};
 
 class NunchukController
 {

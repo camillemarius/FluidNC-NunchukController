@@ -22,5 +22,5 @@ class vTaskFluidNCNunchukController {
         TaskHandle_t nunchukTask;
         SemaphoreHandle_t nunchukSemaphore;
 
-        JoystickData joyStickData;
+        NunchuckData nunchuckData;
 };

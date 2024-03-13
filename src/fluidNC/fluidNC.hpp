@@ -10,6 +10,12 @@ public:
     FluidNC();
     bool isConnected();
     void getGrblState(bool full);
+    void unlock();
+    void homing();
+    void jogCanel();
+    void driveXaxis(uint16_t speed, bool direction);
+    void driveYaxis(uint16_t speed, bool direction);
+    void driveZaxis(uint16_t speed, bool direction);
 
 private:
     FluidNC_WS myCNC = FluidNC_WS();

@@ -4,10 +4,17 @@
 #include "tasks/vTaskFluidNCNunchukController.hpp"
 
 
+#define DEBUG
+
 
 void setup() {
 
   Serial.begin(115200);
+  #ifdef DEBUG
+      Serial.setDebugOutput(true);
+  #else
+      Serial.setDebugOutput(false);
+  #endif
 
   vTaskFluidNC::CreateResources(1);
   vTaskNunchuk::CreateResources(1);

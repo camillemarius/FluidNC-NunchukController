@@ -7,7 +7,8 @@
 class MessageQueueHolder {
     public:
         static MessageQueueHolder& getInstance();
-        static MessageQueueJoystick<JoystickData> msgQueueJoystick;
+        static MessageQueueJoystick<NunchuckData> msgQueueJoystick;
+        static MessageQueueJoystick<FluidNCCmd> msgQueueFluidNC;
 
     private:
         MessageQueueHolder();

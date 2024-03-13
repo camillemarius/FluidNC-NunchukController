@@ -1,7 +1,8 @@
 
 #include "MessageQueueHolder.hpp"
 
-MessageQueueJoystick<JoystickData> MessageQueueHolder::msgQueueJoystick;
+MessageQueueJoystick<NunchuckData> MessageQueueHolder::msgQueueJoystick;
+MessageQueueJoystick<FluidNCCmd> MessageQueueHolder::msgQueueFluidNC;
 
 MessageQueueHolder::MessageQueueHolder() {
     

@@ -120,6 +120,6 @@ uint16_t        NunchukController::getAccelY()          { return joystickdata.AY
 uint16_t        NunchukController::getAccelZ()          { return joystickdata.AZ;}
 uint8_t         NunchukController::getCButton()         { return joystickdata.C; }
 uint8_t         NunchukController::getZButton()         { return joystickdata.Z; }
-JoystickData    NunchukController::getMovementCommand()    {return joystickdata;    }
+JoystickData    NunchukController::getMovementCommand() {return joystickdata;    }
 
 

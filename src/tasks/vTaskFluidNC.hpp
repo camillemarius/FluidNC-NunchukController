@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 #include "fluidNC/fluidNC.hpp"
+#include "queue/MessageQueueHolder.hpp"
+#include "queue/templates/message.h"
 
 class vTaskFluidNC {
     public:

@@ -2,14 +2,20 @@
 #define MESSAGE_H
 
 #include <Arduino.h>
+#include "nunchuk/ButtonHandling.hpp"
+#include "nunchuk/JoystickHandling.hpp"
 
-struct JoystickData {
-        uint8_t JX,JY,C,Z;
-        uint16_t AX,AY,AZ;
+
+struct NunchuckData {
+        JoyStickDirections joystickdirection;
+        JoyStickSpeed joystickspeed;
+        ButtonHandling cButtonHandling;
+        ButtonHandling zButtonHandling;
 };
 
-/*enum FluidNCData {
+enum class FluidNCData {
         poweroff,
+        jogCancel,
         pause,
         quit,
         homing,
@@ -18,9 +24,14 @@ struct JoystickData {
         setYLeft,
         setYRight,
         setZUp,
-        setZDown
-};*/
+        setZDown,
+};
 
+struct FluidNCCmd {
+        FluidNCData cmd;
+        JoyStickSpeed speed;
+
+};
 
 
 #endif // MESSAGE_H

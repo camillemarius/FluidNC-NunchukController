@@ -1,29 +1,29 @@
 #include "tasks/vTaskNunchuk.hpp"
-
 /*--------------------------------------------------------------------------------------
 -- Public Static Methods
 --------------------------------------------------------------------------------------*/
 void vTaskNunchuk::CreateResources(int priority) {
     vTaskNunchuk& r_this = vTaskNunchuk::GetInstance();
-
     r_this.nunchukSemaphore = xSemaphoreCreateBinary();
-    (void) r_this.giveNunchukSemaphore();
     r_this.createTask(priority);
 }
 
 void vTaskNunchuk::createTask(const int priority) {
-    xTaskCreate(this->Run, "vTaskNunchuk", 1000, NULL, priority, &nunchukTask);
+    xTaskCreate(this->Run, "vTaskNunchuk", 2000, NULL, priority, &nunchukTask);
 }
 
 vTaskNunchuk& vTaskNunchuk::GetInstance(void) {
     static vTaskNunchuk instance;
     return instance;
 }
+
 /*--------------------------------------------------------------------------------------
 -- Public Methods
 --------------------------------------------------------------------------------------*/
 vTaskNunchuk::vTaskNunchuk() {
-
+    btnC.setCallback(cButtonCallback);
+    btnZ.setCallback(zButtonCallback);
+    joystick.setCallback(joystickCallback);
 }
 
 /*--------------------------------------------------------------------------------------
@@ -33,61 +33,51 @@ void vTaskNunchuk::Run(void *p)
 {   
     vTaskNunchuk& r_this = GetInstance();
     vTaskDelay(1000 / portTICK_PERIOD_MS);
+
     NunchukController* nunchuk = NunchukController::getInstance(); 
     while (true)
     {
         nunchuk->fetchLatestReadings();
-        r_this.interpretInput(nunchuk->getMovementCommand());
-        MessageQueueHolder::msgQueueJoystick.send(nunchuk->getMovementCommand(),100);
-
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+        
+        r_this.btnC.update(nunchuk->getCButton());
+        r_this.btnZ.update(nunchuk->getZButton());
+        r_this.joystick.update(nunchuk->getJoystickX(),nunchuk->getJoystickY());
+        
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        if((r_this.nunchukdata.cButtonHandling !=ButtonHandling::button_idle) ||
+           (r_this.nunchukdata.zButtonHandling !=ButtonHandling::button_idle) ||
+           (r_this.nunchukdata.joystickdirection!=JoyStickDirections::joystick_idle)) {
+            MessageQueueHolder::msgQueueJoystick.send(r_this.nunchukdata,1);
+        }
+        r_this.nunchukdata.cButtonHandling = ButtonHandling::button_idle;
+        r_this.nunchukdata.zButtonHandling = ButtonHandling::button_idle;
+        r_this.nunchukdata.joystickdirection = JoyStickDirections::joystick_idle;
+        vTaskDelay(50 / portTICK_PERIOD_MS);
     }
 }
 
-void vTaskNunchuk::interpretInput(JoystickData joystickdata) {
-    // Joystick X-Axis
-    uint8_t thrd_X_left = 255;
-    uint8_t thrd_X_right = 20;
-    // if(joyStickData.JX>=thrd_X_left) {
-        
-    // } else if(joyStickData.JX<=thrd_X_right) {
-
-    // }
-    // Joystick Y-Axis
-    uint8_t thrd_Y_left = 255;
-    uint8_t thrd_Y_right = 20;
-    // if(joyStickData.JY>=thrd_Y_left) {
-
-    // } else if(joyStickData.JY<=thrd_Y_right) {
-
-    // }
-    // Joystick C-Button
-    uint8_t thrd_C_released = 20;
-    uint8_t thrd_C_pressed = 255;
-    // if(joyStickData.C>=thrd_C_pressed) {
-
-    // } else if(joyStickData.C<=thrd_C_released) {
-
-    // }
-    // Joystick Z-Button
-    uint8_t thrd_Z_released = 20;
-    uint8_t thrd_Z_pressed = 255;
-    // if(joyStickData.Z>=thrd_Z_pressed) {
-
-    // } else if(joyStickData.Z<=thrd_Z_released) {
-
-    // }
+void vTaskNunchuk::cButtonCallback(ButtonHandling btnHandling) {
+    vTaskNunchuk& r_this = GetInstance();
+    if(btnHandling!=ButtonHandling::button_idle) {
+        r_this.nunchukdata.cButtonHandling = btnHandling;
+    }
 }
-
-bool vTaskNunchuk::takeNunchukSemaphore()
-{
-    return xSemaphoreTake(nunchukSemaphore, 0);
+void vTaskNunchuk::zButtonCallback(ButtonHandling btnHandling){
+    vTaskNunchuk& r_this = GetInstance();
+    if(btnHandling!=ButtonHandling::button_idle) {
+        r_this.nunchukdata.zButtonHandling = btnHandling;
+    }
 }
-
-bool vTaskNunchuk::giveNunchukSemaphore()
-{
-    return xSemaphoreGive(nunchukSemaphore);
+void vTaskNunchuk::joystickCallback(JoyStickDirections joystickDirections, JoyStickSpeed joystickspeed) {
+    vTaskNunchuk& r_this = GetInstance();
+    static uint16_t cnt = 0;
+    if(joystickDirections!=JoyStickDirections::joystick_idle) {
+        cnt++;
+        if(cnt>=5) { // prevent unintentionally movements
+            r_this.nunchukdata.joystickdirection = joystickDirections;
+            r_this.nunchukdata.joystickspeed = joystickspeed;
+        }
+    } else {
+        cnt = 0;
+    }
 }
-
-
-
